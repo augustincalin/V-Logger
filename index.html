@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+    <title>VLogger</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      header {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background-color: #3b2abd;
+        color: white;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      header .controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      header select,
+      header button {
+        width: 100px;
+        padding: 5px 10px;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        border-radius: 10px;
+        backdrop-filter: blur(10px);
+        cursor: pointer;
+        transition: background 0.3s, border 0.3s;
+      }
+      header select option {
+        color: black;
+      }
+
+      header select:hover,
+      header button:hover {
+        background: rgba(255, 255, 255, 0.3);
+        border: 2px solid rgba(255, 255, 255, 0.6);
+      }
+
+      main {
+        margin-top: 70px;
+        padding: 20px;
+        flex: 1;
+      }
+
+      .list {
+        width: 300px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .list-item {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        display: flex;
+      }
+
+      .list-item .time {
+        flex: 1;
+      }
+      .list-item .value {
+        flex: 1;
+        text-align: right;
+      }
+
+      footer {
+        color: rgb(95, 95, 95);
+        text-align: center;
+        padding: 10px 0;
+      }
+      .title {
+        font-size: 1.5rem;
+      }
+      .day-selector {
+        width: 150px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="title">Voltage Logger</div>
+      <div class="controls">
+        <select id="dropdown" class="day-selector">
+          <option value="">select...</option>
+          <option value="list1">2024-12-26</option>
+          <option value="list1">2024-12-25</option>
+          <option value="list1">2024-12-24</option>
+        </select>
+        <button>Read now</button>
+        <button>Delete all</button>
+        <button>Reset</button>
+      </div>
+    </header>
+
+    <main>
+      <div
+        class="list"
+        id="list-container">
+        <div class="list-item">
+          <span class="time">02:00</span><span class="value">100</span>
+        </div>
+      </div>
+    </main>
+
+    <footer>&copy; 2024 Responsive Layout Example</footer>
+
+    <script>
+      document
+        .getElementById("dropdown")
+        .addEventListener("change", function () {
+          const selectedValue = this.value;
+          const listContainer = document.getElementById("list-container");
+
+          // Example logic to change list items based on dropdown selection
+          let items = [];
+          if (selectedValue === "list1") {
+            items = [
+              "Date: 2024-12-25, Value: 100",
+              "Date: 2024-12-26, Value: 200",
+              "Date: 2024-12-27, Value: 300",
+            ];
+          } else if (selectedValue === "list2") {
+            items = [
+              "Date: 2025-01-01, Value: 150",
+              "Date: 2025-01-02, Value: 250",
+              "Date: 2025-01-03, Value: 350",
+            ];
+          } else if (selectedValue === "list3") {
+            items = [
+              "Date: 2026-06-15, Value: 50",
+              "Date: 2026-06-16, Value: 75",
+              "Date: 2026-06-17, Value: 125",
+            ];
+          }
+
+          listContainer.innerHTML = items
+            .map((item) => `<div class="list-item"><span class="time">02:00</span><span class="value">100</span></div>`)
+            .join("");
+        });
+    </script>
+  </body>
+</html>
