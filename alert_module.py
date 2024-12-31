@@ -1,17 +1,18 @@
 import urequests
-import globals
+import settings
 
-def send_alert(voltage):
+def send_alert(voltage, count):
     
     try:
         # Data to send in the HTTP POST request
         data = {
             "voltage": voltage,
+            "count": count,
             "status": "out_of_range",
-            "message": f"Voltage {voltage:.2f}V is outside the range [{globals.MIN_VOLTAGE} ... {globals.MAX_VOLTAGE}]V."
+            "message": f"""Voltage {voltage:.2f}V is outside the range [{settings.Settings.get("min_voltage")} ... {settings.Settings.get("max_voltage")}]V."""
         }
         # Send the HTTP POST request
-        response = urequests.post(globals.ALERT_URL, json=data)
+        response = urequests.post(settings.Settings.get("alert_url"), json=data)
         
         # Check the response status
         if response.status_code == 200:
