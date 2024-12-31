@@ -1,169 +1,241 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0" />
-    <title>VLogger</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
 
-      body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VLogger</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-      header {
-        position: fixed;
-        top: 0;
-        width: 100%;
-        background-color: #3b2abd;
-        color: white;
-        padding: 10px 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        z-index: 1000;
-      }
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
 
-      header .controls {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background-color: #3b2abd;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+    }
 
-      header select,
-      header button {
-        width: 100px;
-        padding: 5px 10px;
-        background: rgba(255, 255, 255, 0.2);
-        color: white;
-        border: 2px solid rgba(255, 255, 255, 0.4);
-        border-radius: 10px;
-        backdrop-filter: blur(10px);
-        cursor: pointer;
-        transition: background 0.3s, border 0.3s;
-      }
-      header select option {
-        color: black;
-      }
+    header .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-      header select:hover,
-      header button:hover {
-        background: rgba(255, 255, 255, 0.3);
-        border: 2px solid rgba(255, 255, 255, 0.6);
-      }
+    header select,
+    header button {
+      width: 100px;
+      padding: 5px 10px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+      transition: background 0.3s, border 0.3s;
+    }
 
-      main {
-        margin-top: 70px;
-        padding: 20px;
-        flex: 1;
-      }
+    header select option {
+      color: black;
+    }
 
-      .list {
-        width: 300px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
+    header select:hover,
+    header button:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border: 2px solid rgba(255, 255, 255, 0.6);
+    }
 
-      .list-item {
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        background-color: #f9f9f9;
-        display: flex;
-      }
+    main {
+      margin-top: 70px;
+      padding: 20px;
+      flex: 1;
+    }
 
-      .list-item .time {
-        flex: 1;
-      }
-      .list-item .value {
-        flex: 1;
-        text-align: right;
-      }
+    .list {
+      width: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
-      footer {
-        color: rgb(95, 95, 95);
-        text-align: center;
-        padding: 10px 0;
-      }
-      .title {
-        font-size: 1.5rem;
-      }
-      .day-selector {
-        width: 150px;
-      }
-    </style>
-  </head>
-  <body>
-    <header>
-      <div class="title">Voltage Logger</div>
-      <div class="controls">
-        <select id="dropdown" class="day-selector">
-          <option value="">select...</option>
-          <option value="list1">2024-12-26</option>
-          <option value="list1">2024-12-25</option>
-          <option value="list1">2024-12-24</option>
-        </select>
-        <button>Read now</button>
-        <button>Delete all</button>
-        <button>Reset</button>
+    .list-item {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      display: flex;
+    }
+
+    .list-item .time {
+      flex: 1;
+    }
+
+    .list-item .value {
+      flex: 1;
+      text-align: right;
+    }
+
+    footer {
+      color: rgb(95, 95, 95);
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    .title {
+      font-size: 1.5rem;
+    }
+
+    .day-selector {
+      width: 150px;
+    }
+
+    a, a:visited{
+      text-decoration: none;
+      color: white;
+    }
+    a:hover{
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="title">Voltage Logger</div>
+    <div class="controls">
+      <select id="dropdown" class="day-selector">
+        <option value="">(wait...)</option>
+      </select>
+      <button>Read now</button>
+      <button>Delete all</button>
+      <button>Reset</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="list" id="list-container">
+      <div class="list-item">
+        <span class="time">02:00</span><span class="value">100</span>
       </div>
-    </header>
+    </div>
+  </main>
 
-    <main>
-      <div
-        class="list"
-        id="list-container">
-        <div class="list-item">
-          <span class="time">02:00</span><span class="value">100</span>
-        </div>
-      </div>
-    </main>
+  <footer><a href="https://github.com/augustincalin/V-Logger" target="_blank">Made by Gusti 2024 (Christmas holiday)</a>
+  </footer>
 
-    <footer>&copy; 2024 Responsive Layout Example</footer>
+  <script>
+    async function fetchFileNames() {
+      const apiUrl = `http://vlogger.local/days`;
 
-    <script>
-      document
-        .getElementById("dropdown")
-        .addEventListener("change", function () {
-          const selectedValue = this.value;
-          const listContainer = document.getElementById("list-container");
+      try {
+        // Make a GET request to the Microdot API
+        const response = await fetch(apiUrl);
 
-          // Example logic to change list items based on dropdown selection
-          let items = [];
-          if (selectedValue === "list1") {
-            items = [
-              "Date: 2024-12-25, Value: 100",
-              "Date: 2024-12-26, Value: 200",
-              "Date: 2024-12-27, Value: 300",
-            ];
-          } else if (selectedValue === "list2") {
-            items = [
-              "Date: 2025-01-01, Value: 150",
-              "Date: 2025-01-02, Value: 250",
-              "Date: 2025-01-03, Value: 350",
-            ];
-          } else if (selectedValue === "list3") {
-            items = [
-              "Date: 2026-06-15, Value: 50",
-              "Date: 2026-06-16, Value: 75",
-              "Date: 2026-06-17, Value: 125",
-            ];
-          }
+        // Check if the response is OK
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
-          listContainer.innerHTML = items
-            .map((item) => `<div class="list-item"><span class="time">02:00</span><span class="value">100</span></div>`)
-            .join("");
+        // Parse the JSON response
+        const data = await response.json();
+
+        // Check for errors in the JSON response
+        if (data.error) {
+          console.error(`API Error: ${data.error}`);
+          return [];
+        }
+
+        // Process the file names and remove their extensions
+        const fileNames = data.files.map(file => {
+          const dotIndex = file.lastIndexOf('.');
+          return dotIndex > 0 ? file.substring(0, dotIndex) : file; // Remove extension
         });
-    </script>
-  </body>
+
+        return fileNames;
+      } catch (error) {
+        console.error(`Failed to fetch file names: ${error.message}`);
+        return [];
+      }
+    }
+
+    async function fetchFileContent(day) {
+      const apiUrl = `http://vlogger.local/day/${day}`;
+
+      try {
+        // Make a GET request to the Microdot API
+        const response = await fetch(apiUrl);
+
+        // Check if the response is OK
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        // Parse the JSON response
+        const data = await response.json();
+
+        // Check for errors in the JSON response
+        if (data.error) {
+          console.error(`API Error: ${data.error}`);
+          return [];
+        }
+
+        // Process the file names and remove their extensions
+        const content_lines = data.values.map(line => {
+          const items = line.split(' ');
+          return {
+            time: items[0],
+            value: items[1]
+          }
+        });
+
+        return content_lines;
+      } catch (error) {
+        console.error(`Failed to fetch file content: ${error.message}`);
+        return [];
+      }
+
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const fileNames = await fetchFileNames();
+
+      const day_selector = document.getElementById("dropdown");
+      day_selector.innerHTML = `<option value="">..select:</option>` + fileNames.map((item) => `<option value="${item}">${item}</option>`);
+    });
+
+    document.getElementById("dropdown")
+      .addEventListener("change", async () => {
+        const selectedValue = this.value;
+        const listContainer = document.getElementById("list-container");
+
+        let items = [];
+        // Example logic to change list items based on dropdown selection
+        if (selectedValue !== "") {
+          items = await fetch_file_content(selectedValue);
+          console.log(items);
+        }
+
+        listContainer.innerHTML = items
+          .map((item) => `<div class="list-item"><span class="time">${item[0]}</span><span class="value">${item[1]}</span></div>`)
+          .join("");
+      });
+  </script>
+</body>
+
 </html>
