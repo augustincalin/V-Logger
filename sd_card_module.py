@@ -104,3 +104,15 @@ def read_log_file(file_name):
         return lines
     except Exception as e:
         return f"Error reading the file: {e}"
+
+def delete_all_logs():
+    try:
+        # List all files in the folder
+        path = settings.Settings.get("logs_path")
+        files = os.listdir(path)
+        for file in files:
+            file_path = path + "/" + file
+            os.remove(file_path)  # Delete the file
+        print("All files deleted successfully!")
+    except Exception as e:
+        print("Error deleting files:", e)
