@@ -11,7 +11,7 @@ import alert_module
 import time_module
 import ujson
 import settings
-
+import time_module
 
 # Connect to Wi-Fi
 app = Microdot()
@@ -29,14 +29,13 @@ async def shutdown(request):
 @app.route('/days')
 def list_files(request):
     try:
-        
         files = sd_card_module.list_log_files()
         return ujson.dumps({"files": files}), 200, {'Content-Type': 'application/json'}
     except OSError as e:
         return ujson.dumps({"error": str(e)}), 500, {'Content-Type': 'application/json'}
 
 @app.route('/day/<day>')
-def list_files(request, day):
+def get_day(request, day):
     try:
         content = sd_card_module.read_log_file(f"{day}.txt")
         return ujson.dumps({"values": content}), 200, {'Content-Type': 'application/json'}
@@ -44,7 +43,7 @@ def list_files(request, day):
         return ujson.dumps({"error": str(e)}), 500, {'Content-Type': 'application/json'}
 
 @app.route('/reset')
-def list_files(request):
+def reset_machine(request):
     machine.reset()
 
 @app.route('/clear')
@@ -59,6 +58,9 @@ def read_value(request):
     except OSError as e:
         return ujson.dumps({"error": str(e)}), 500, {'Content-Type': 'application/json'}
 
+@app.route('/favicon.ico')
+async def static(request):
+    return send_file('/favicon.ico', max_age=86400)
 
 async def main():
     alert_count = 0
@@ -89,9 +91,10 @@ if sd_card_module.initialize_sdcard():
         wifi_module.connect_to_wifi(ssid, password)  # Connect to Wi-Fi
         time_module.init_time()
     else:
-        print("Failed to retrieve Wi-Fi credentials.")
+        print("Failed to retrieve WiFi credentials.")
 
     loop = asyncio.get_event_loop()
     loop.create_task(main())
     app.run(port=80, debug=True)
 
+ 

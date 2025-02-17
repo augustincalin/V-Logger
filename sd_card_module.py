@@ -37,7 +37,7 @@ def write_value(value):
     # Get the current date and time
     current_time = time.localtime()
     print("Time: ", current_time)
-    date_string = f"{current_time[0]:04d}-{current_time[1]:02d}-{current_time[2]:02d}-{current_time[3]:02d}"
+    date_string = f"{current_time[0]:04d}-{current_time[1]:02d}-{current_time[2]:02d}_{current_time[3]:02d}-00"
     time_string = f"{current_time[3]:02d}:{current_time[4]:02d}:{current_time[5]:02d}"
     
     # SD card file path
