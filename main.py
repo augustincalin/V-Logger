@@ -63,23 +63,13 @@ async def static(request):
     return send_file('/favicon.ico', max_age=86400)
 
 async def main():
-    alert_count = 0
-    previous_alert_voltage = -1
     while True:
         voltage = voltage_module.read_voltage()
         sd_card_module.write_value(voltage)
 
         # Check if voltage is outside the specified range
         if voltage < settings.Settings.get("min_voltage") or voltage > settings.Settings.get("max_voltage"):
-            alert_count = alert_count + 1
-            if previous_alert_voltage == -1:
-                previous_alert_voltage = voltage
-
-            if abs(voltage - previous_alert_voltage) > settings.Settings.get("allowed_diff") or alert_count > settings.Settings.get("alerts_count"):
-                alert_module.send_alert(voltage, alert_count)
-                alert_count = 0
-
-            previous_alert_voltage = voltage
+            alert_module.send_alert(voltage, alert_count)
 
         await asyncio.sleep(settings.Settings.get("read_time"))
 

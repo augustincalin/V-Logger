@@ -6,13 +6,13 @@ import math
 
 def read_voltage():
     # Calibration factor (initial estimate, adjust later)
-    CALIBRATION_FACTOR = 323.0  # Adjust this based on real measurements
-    adc = machine.ADC(machine.Pin(34))
+    CALIBRATION_FACTOR = settings.Settings.get("calibration_factor")  # Adjust this based on real measurements
+    adc = machine.ADC(machine.Pin(settings.Settings.get("adc_pin")))
     adc.atten(machine.ADC.ATTN_11DB)  # Full range: 0-3.6V
     adc.width(machine.ADC.WIDTH_12BIT)
     
     # Sampling settings
-    NUM_SAMPLES = 3000  # Increase for better accuracy
+    NUM_SAMPLES = settings.Settings.get("num_samples")
     SAMPLE_INTERVAL = 0.2 / NUM_SAMPLES  # Spread over 1/5th of a 50Hz cycle
 
     sum_values = 0
@@ -38,5 +38,5 @@ def read_voltage():
 
     # Scale to actual AC voltage
     ac_voltage = rms_voltage * CALIBRATION_FACTOR
-    print(ac_voltage)
+    # print(ac_voltage)
     return ac_voltage
