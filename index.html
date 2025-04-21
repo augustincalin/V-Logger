@@ -401,7 +401,7 @@
       .addEventListener("click", async function () {
         const listContainer = document.getElementById("instant-value");
 
-        listContainer.innerHTML = `<div class="value-instant">??</div><div class="time-instant">loading...</div>`;
+        listContainer.innerHTML = `<div class="value-instant"><img src="wait.gif"/></div><div class="time-instant">loading...</div>`;
 
         let value = await fetchValue();
 
