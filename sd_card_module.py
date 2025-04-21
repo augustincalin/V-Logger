@@ -3,6 +3,9 @@ import os
 import time
 import settings
 
+ARCHIVE_FOLDER = 'archive'
+RETENTION_DAYS = 3
+
 # Initialize the SD card
 def initialize_sdcard():
     try:
@@ -21,6 +24,30 @@ def file_or_dir_exists(filename):
         return True
     except OSError:
         return False
+    
+def archive_old_files():
+    now = time.time()
+    log_path = settings.Settings.get("logs_path")
+    files = os.listdir(log_path)
+    grouped = group_files_by_day(files)
+    ensure_archive_folder()
+
+    for day, file_list in grouped.items():
+        # Check if the day is older than 3 days
+        day_time = parse_date(day + '_00-00.txt')  # Dummy time to parse
+        if not day_time:
+            continue
+        age_days = (now - day_time) / (60 * 60 * 24)
+        if age_days > RETENTION_DAYS:
+            file_list.sort()  # optional, to keep chronological order
+            archive_path = log_path + "/" + ARCHIVE_FOLDER + '/' + day + '.txt'
+            with open(archive_path, 'w') as archive_file:
+                for f in file_list:
+                    with open(log_path + "/" + f) as infile:
+                        archive_file.write(infile.read())
+                        archive_file.write('\n')  # optional: separator
+                    os.remove(log_path + "/" + f)
+            print("Archived:", archive_path)
 
 def write_value(value):
     """
@@ -33,6 +60,8 @@ def write_value(value):
     if not file_or_dir_exists(settings.Settings.get("logs_path")):
         print("making logs folder")
         os.mkdir(settings.Settings.get("logs_path"))
+
+    archive_old_files()
 
     # Get the current date and time
     current_time = time.localtime()
@@ -107,12 +136,43 @@ def read_log_file(file_name):
 
 def delete_all_logs():
     try:
-        # List all files in the folder
         path = settings.Settings.get("logs_path")
         files = os.listdir(path)
         for file in files:
             file_path = path + "/" + file
+            if os.stat(file_path)[0] & 0x4000:
+                continue
             os.remove(file_path)  # Delete the file
         print("All files deleted successfully!")
     except Exception as e:
         print("Error deleting files:", e)
+
+def parse_date(filename):
+    try:
+        date_part = filename.split('_')[0]  # '2025-04-21'
+        return time.mktime((
+            int(date_part[0:4]),  # year
+            int(date_part[5:7]),  # month
+            int(date_part[8:10]),  # day
+            0, 0, 0, 0, 0))  # hour, min, sec, weekday, yearday
+    except:
+        return None
+
+def ensure_archive_folder():
+    log_path = settings.Settings.get("logs_path");
+    if ARCHIVE_FOLDER not in os.listdir(log_path):
+        os.mkdir(log_path + "/" + ARCHIVE_FOLDER)
+
+def group_files_by_day(files):
+    grouped = {}
+    for fname in files:
+        if not fname.endswith('.txt'):
+            continue
+        if len(fname) < 15:  # skip malformed
+            continue
+        day = fname[:10]
+        if day not in grouped:
+            grouped[day] = []
+        grouped[day].append(fname)
+    print(grouped)
+    return grouped
